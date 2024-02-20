@@ -11,7 +11,7 @@ from langchain_community.document_loaders.base import BaseLoader
 class AzureBlobStorageContainerLoader(BaseLoader):
     """Load from `Azure Blob Storage` container."""
 
-    def __init__(self, conn_str: str, container: str, prefix: str = ""):
+    def __init__(self, conn_str: str, container: str, prefix: str = "", fileloader_mode: str="single"):
         """Initialize with connection string, container and blob prefix."""
         self.conn_str = conn_str
         """Connection string for Azure Blob Storage."""
@@ -19,6 +19,8 @@ class AzureBlobStorageContainerLoader(BaseLoader):
         """Container name."""
         self.prefix = prefix
         """Prefix for blob names."""
+        self.fileloader_mode = fileloader_mode
+        """The mode of the UnstrcturedFileLoader"""
 
     def load(self) -> List[Document]:
         """Load documents."""
@@ -40,6 +42,7 @@ class AzureBlobStorageContainerLoader(BaseLoader):
                 self.conn_str,
                 self.container,
                 blob.name,  # type: ignore
+                self.fileloader_mode
             )
             docs.extend(loader.load())
         return docs
