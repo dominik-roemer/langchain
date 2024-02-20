@@ -11,7 +11,7 @@ from langchain_community.document_loaders.unstructured import UnstructuredFileLo
 class AzureBlobStorageFileLoader(BaseLoader):
     """Load from `Azure Blob Storage` files."""
 
-    def __init__(self, conn_str: str, container: str, blob_name: str):
+    def __init__(self, conn_str: str, container: str, blob_name: str, fileloader_mode: str="single"):
         """Initialize with connection string, container and blob name."""
         self.conn_str = conn_str
         """Connection string for Azure Blob Storage."""
@@ -19,6 +19,8 @@ class AzureBlobStorageFileLoader(BaseLoader):
         """Container name."""
         self.blob = blob_name
         """Blob name."""
+        self.mode = fileloader_mode
+        """Mode for the UnstructuredFileLoader"""
 
     def load(self) -> List[Document]:
         """Load documents."""
@@ -40,5 +42,5 @@ class AzureBlobStorageFileLoader(BaseLoader):
             with open(f"{file_path}", "wb") as file:
                 blob_data = client.download_blob()
                 blob_data.readinto(file)
-            loader = UnstructuredFileLoader(file_path)
+            loader = UnstructuredFileLoader(file_path, mode=fileloader_mode)
             return loader.load()
